@@ -141,7 +141,7 @@ class Dice(object):
         if self._is_count_valid() and self._is_base_valid():
             return True
 
-    # Dice functionality
+    # Dice roll functionality
     def roll(self):
         """
         Roll Dice and return result
@@ -231,13 +231,13 @@ class GurpsDice(Dice):
             dice_str
         )
         if dice_search:
-            return {k: int(v) for k, v in dice_search.groupdict().items()}
+            return {k: int(v or 0) for k, v in dice_search.groupdict().items()}
         else:
             raise EmptyDiceError("there is no correct dice param in str")
 
     def set_base(self, base):
         """
-        Set dice base for Dice
+        Set dice base for GurpsDice
         """
         if base != 6:
             raise BaseDiceError("dice base should be equal to 6")
@@ -245,16 +245,27 @@ class GurpsDice(Dice):
 
     def set_bonus(self, bonus):
         """
-        Set bonus for Dice
+        Set bonus for GurpsDice
         """
         if not isinstance(bonus, int):
             raise TypeError("unsupported operand type for set_base: '{}'".format(type(bonus)))
         self.bonus = bonus
 
     # Validating
+
+    def _is_base_valid(self):
+        """
+        Check Dice for validity by dice base.
+        Return True if it's Ok
+        Rise error's if something not Ok
+        """
+        if self.base != 6:
+            raise BaseDiceError("dice base should be equal to 6")
+        return True
+
     def _is_bonus_valid(self):
         """
-        Check Dice for validity by bonus.
+        Check GurpsDice for validity by bonus.
         Return True if it's Ok
         Rise error's if something not Ok
         """
@@ -264,7 +275,7 @@ class GurpsDice(Dice):
 
     def _is_dice_valid(self):
         """
-        Check Dice for whole validity.
+        Check GurpsDice for whole validity.
         Return True if it's Ok
         Rise error's if something not Ok
         """
@@ -272,10 +283,10 @@ class GurpsDice(Dice):
         if base_and_count_valid and self._is_bonus_valid():
             return True
 
-    # Dice functionality
+    # GurpsDice roll functionality
     def roll(self):
         """
-        Roll Dice and return result
+        Roll GurpsDice and return result
         """
         roll_result = super(GurpsDice, self).roll()
         return roll_result + self.bonus
