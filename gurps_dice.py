@@ -42,8 +42,7 @@ class Dice(object):
             self.base = dice_dict['base']
 
     def __call__(self, count=0, base=0):
-        self.__init__(count=count, base=base)
-        return self
+        return self.roll()
 
     def __str__(self):
         dice_str = "{:d}d{:d}".format(self.count, self.base)
@@ -199,10 +198,6 @@ class GurpsDice(Dice):
         if self._is_bonus_valid(bonus=dice_dict['bonus']):
             self.bonus = dice_dict['bonus']
 
-    def __call__(self, count=1, base=6, bonus=0):
-        self.__init__(count=count, base=base, bonus=bonus)
-        return self
-
     def __str__(self):
         dice_str = super(GurpsDice, self).__str__()
         if self.bonus:
@@ -311,6 +306,74 @@ class GurpsDice(Dice):
         base_and_count_valid = super(GurpsDice, self)._is_dice_valid()
         if base_and_count_valid and self._is_self_bonus_valid():
             return True
+
+    # GurpsDise rounding
+    def _add_dice(self):
+        """
+        Added one dice to Dice and balance it
+        """
+        self.bonus -= 4
+        self.count += 1
+
+    def _remove_dice(self):
+        """
+        Remove one dice from Dice and balance it
+        """
+        self.bonus += 4
+        self.count -= 1
+
+    def equiv_up_step(self, round_seven=True):
+        """
+        Make one step of Dice equivalenting
+        It's round up Dice
+        """
+        if self._is_dice_valid():
+            if self.bonus >= 7 and round_seven:
+                self.bonus -= 7
+                self.count += 2
+            elif self.bonus >= 4:
+                self._add_dice()
+            elif self.bonus == 3:
+                self._add_dice()
+
+    def equiv_up_max(self, round_seven=True):
+        """
+        Make Dice absolute equivalenting
+        It's round max up Dice
+        """
+        if self._is_dice_valid():
+            if self.bonus >= 7 and round_seven:
+                multiplier = self.bonus // 7
+                self.bonus -= 7 * multiplier
+                self.count += 2 * multiplier
+            while self.bonus >= 3:
+                self._add_dice()
+
+    def equiv_down_step(self):
+        """
+        Make one step of Dice equivalenting
+        It's round down Dice
+        """
+        if self._is_dice_valid():
+            if self.bonus <= -2 and self.count > 1:
+                self._remove_dice()
+
+    def equiv_down_max(self):
+        """
+        Make Dice absolute equivalenting
+        It's round max down Dice
+        """
+        if self._is_dice_valid():
+            while self.bonus <= -2 and self.count > 1:
+                self._remove_dice()
+
+    def equiv(self, round_seven=True):
+        """
+        Make Dice absolute equivalenting
+        It's round max up and down Dice
+        """
+        self.equiv_up_max(round_seven)
+        self.equiv_down_max()
 
     # GurpsDice roll functionality
     def roll(self):
