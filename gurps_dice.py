@@ -1,6 +1,5 @@
 import re
 import random
-from functools import wraps
 
 
 class DiceError(Exception):
@@ -68,7 +67,7 @@ class Dice(object):
             dice = Dice(count=self.count - other.count, base=self.base)
             return dice
         else:
-            raise TypeError("unsupported operand type(s) for +: '{}' and '{}'".format(self.__class__, type(other)))
+            raise TypeError("unsupported operand type(s) for -: '{}' and '{}'".format(self.__class__, type(other)))
 
     # Setting
     @staticmethod
@@ -216,7 +215,7 @@ class GurpsDice(Dice):
         elif isinstance(other, int):
             dice = GurpsDice(count=self.count, bonus=self.bonus - other)
         else:
-            raise TypeError("unsupported operand type(s) for +: '{}' and '{}'".format(self.__class__, type(other)))
+            raise TypeError("unsupported operand type(s) for -: '{}' and '{}'".format(self.__class__, type(other)))
         return dice
 
     # Setting
