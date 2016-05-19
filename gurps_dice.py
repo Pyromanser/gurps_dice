@@ -168,7 +168,7 @@ class Dice(object):
         Return the minimum value which can be
         """
         if self._is_dice_valid():
-            return self.count
+            return self.count if self.base else 0
 
 
 class GurpsDice(Dice):
