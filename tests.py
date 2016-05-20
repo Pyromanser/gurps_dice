@@ -2,7 +2,7 @@ import random
 from gurps_dice import Dice, GurpsDice, EmptyDiceError, BaseDiceError, CountDiceError, BonusDiceError
 from gurps_dice_handful import HandfulDice
 
-run_test_dice = False
+run_test_dice = True
 run_test_gurps_dice = True
 
 def random_int(start, end, excluding=()):
@@ -44,8 +44,8 @@ def test_dice():
                 except EmptyDiceError:
                     pass
                 else:
-                    assert True, 'Dice("{dice_str}") should raise EmptyDiceError, Dice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
-    print('Dice("<count>d<base>") with count, base and "bonus" parameters in range 0-100 raise EmptyDiceError, OK')
+                    assert False, 'Dice("{dice_str}") should raise EmptyDiceError, Dice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
+    print('Dice("<count>d<base>±<bonus>") with count, base and "bonus" parameters in range 0-100 raise EmptyDiceError, OK')
 
     for count in range(-100, 0):
         for base in range(101):
@@ -55,7 +55,7 @@ def test_dice():
             except EmptyDiceError:
                 pass
             else:
-                assert True, 'Dice("{dice_str}") should raise EmptyDiceError, Dice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
+                assert False, 'Dice("{dice_str}") should raise EmptyDiceError, Dice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
     print('Dice("<count>d<base>") with count in range -100-0 and base in range 0-100 parameters in range 0-100 raise EmptyDiceError, OK')
 
     for count in range(101):
@@ -66,7 +66,7 @@ def test_dice():
             except EmptyDiceError:
                 pass
             else:
-                assert True, 'Dice("{dice_str}") should raise EmptyDiceError, Dice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
+                assert False, 'Dice("{dice_str}") should raise EmptyDiceError, Dice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
     print('Dice("<count>d<base>") with count in range 0-100 and base in range -100-0 parameters in range 0-100 raise EmptyDiceError, OK')
 
     for base in range(101):
@@ -99,7 +99,7 @@ def test_dice():
                     except BaseDiceError:
                         pass
                     else:
-                        assert True, 'Dice({count1}, {base1}) + Dice({count2}, {base2}) should raise BaseDiceError, Dice({count1}, {base1}) + Dice({count2}, {base2}) == {dice}'.format(count1=count1, count2=count2, base1=base1, base2=base2, dice=dice)
+                        assert False, 'Dice({count1}, {base1}) + Dice({count2}, {base2}) should raise BaseDiceError, Dice({count1}, {base1}) + Dice({count2}, {base2}) == {dice}'.format(count1=count1, count2=count2, base1=base1, base2=base2, dice=dice)
     print('Dice(count1, base1) + Dice(count2, base2) with count1 and count2 in range 0-50, base1 and base2 in disjoint range 0-50 raise BaseDiceError, OK')
 
     dice1 = Dice(1, 20)
@@ -109,7 +109,7 @@ def test_dice():
     except TypeError:
         print('Dice(1, 20) + "1d20" raise TypeError, OK')
     else:
-        assert True, 'Dice(1, 20) + "1d20" should raise TypeError, Dice(1, 20) + "1d20" == %s' % dice
+        assert False, 'Dice(1, 20) + "1d20" should raise TypeError, Dice(1, 20) + "1d20" == %s' % dice
 
     dice1 = Dice(1, 20)
     bonus = 1
@@ -118,7 +118,7 @@ def test_dice():
     except TypeError:
         print('Dice(1, 20) + 1 raise TypeError, OK')
     else:
-        assert True, 'Dice(1, 20) + 1 should raise TypeError, Dice(1, 20) + 1 == %s' % dice
+        assert False, 'Dice(1, 20) + 1 should raise TypeError, Dice(1, 20) + 1 == %s' % dice
 
     for base in range(101):
         for count1 in range(101):
@@ -135,7 +135,7 @@ def test_dice():
     for base in range(101):
         for count1 in range(101):
             for count2 in range(101):
-                if count1 > count2:
+                if count2 <= count1:
                     continue
                 dice1 = Dice(count1, base)
                 dice2 = Dice(count2, base)
@@ -144,8 +144,8 @@ def test_dice():
                 except CountDiceError:
                     pass
                 else:
-                    assert True, 'Dice({count1}, {base}) - Dice({count2}, {base}) should raise CountDiceError, Dice({count1}, {base}) - Dice({count2}, {base}) == {dice}'.format(count1=count1, count2=count2, base=base, dice=dice)
-    print('Dice(count1, base) - Dice(count2, base) with count1 and count2 on condition count1 > count2 and base parameters in range 0-100 raise CountDiceError, OK')
+                    assert False, 'Dice({count1}, {base}) - Dice({count2}, {base}) should raise CountDiceError, Dice({count1}, {base}) - Dice({count2}, {base}) == {dice}'.format(count1=count1, count2=count2, base=base, dice=dice)
+    print('Dice(count1, base) - Dice(count2, base) with count1 and count2 on condition count2 <= count1 and base parameters in range 0-100 raise CountDiceError, OK')
 
     for count1 in range(51):
         for count2 in range(51):
@@ -160,7 +160,7 @@ def test_dice():
                     except BaseDiceError:
                         pass
                     else:
-                        assert True, 'Dice({count1}, {base1}) - Dice({count2}, {base2}) should raise BaseDiceError, Dice({count1}, {base1}) - Dice({count2}, {base2}) == {dice}'.format(count1=count1, count2=count2, base1=base1, base2=base2, dice=dice)
+                        assert False, 'Dice({count1}, {base1}) - Dice({count2}, {base2}) should raise BaseDiceError, Dice({count1}, {base1}) - Dice({count2}, {base2}) == {dice}'.format(count1=count1, count2=count2, base1=base1, base2=base2, dice=dice)
     print('Dice(count1, base1) - Dice(count2, base2) with count1 and count2 in range 0-50, base1 on condition count2 > count1 and base2 in disjoint range 0-50 raise BaseDiceError, OK')
 
     dice1 = Dice(1, 20)
@@ -170,7 +170,7 @@ def test_dice():
     except TypeError:
         print('Dice(1, 20) - "1d20" raise TypeError, OK')
     else:
-        assert True, 'Dice(1, 20) - "1d20" should raise TypeError, Dice(1, 20) - "1d20" == %s' % dice
+        assert False, 'Dice(1, 20) - "1d20" should raise TypeError, Dice(1, 20) - "1d20" == %s' % dice
 
     dice1 = Dice(1, 20)
     bonus = 1
@@ -179,7 +179,7 @@ def test_dice():
     except TypeError:
         print('Dice(1, 20) - 1 raise TypeError, OK')
     else:
-        assert True, 'Dice(1, 20) - 1 should raise TypeError, Dice(1, 20) - 1 == %s' % dice
+        assert False, 'Dice(1, 20) - 1 should raise TypeError, Dice(1, 20) - 1 == %s' % dice
 
     for count in range(101):
         for base in range(101):
