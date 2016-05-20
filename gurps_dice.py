@@ -10,42 +10,42 @@ class EmptyDiceError(DiceError):
     pass
 
 
-class BaseDiceError(DiceError):
+class DiceFaceError(DiceError):
     pass
 
 
-class CountDiceError(DiceError):
+class DiceCountError(DiceError):
     pass
 
 
-class BonusDiceError(DiceError):
+class DiceBonusError(DiceError):
     pass
 
 
 class Dice(object):
     """
-    It makes it possible to operate with dices with same base.
-    <count>d<base>
-    You can stack the Dice with the same base.
+    It makes it possible to operate with dices with same face.
+    <count>d<face>
+    You can stack the Dice with the same face.
     Dice("1d6") + Dice("2d6") -> Dice("3d6")
     Dice("3d6") + Dice("1d6") -> Dice("2d6")
     """
 
-    def __init__(self, count=0, base=0):
+    def __init__(self, count=0, face=0):
         if not isinstance(count, int):
             dice_dict = self.search_dice_in_str(count)
         else:
-            dice_dict = {'count': count, 'base': base}
+            dice_dict = {'count': count, 'face': face}
         if self._is_count_valid(count=dice_dict['count']):
             self.count = dice_dict['count']
-        if self._is_base_valid(base=dice_dict['base']):
-            self.base = dice_dict['base']
+        if self._is_face_valid(face=dice_dict['face']):
+            self.face = dice_dict['face']
 
     def __call__(self):
         return self.roll()
 
     def __str__(self):
-        dice_str = "{:d}d{:d}".format(self.count, self.base)
+        dice_str = "{:d}d{:d}".format(self.count, self.face)
         return dice_str
 
     def __repr__(self):
@@ -53,18 +53,18 @@ class Dice(object):
 
     def __add__(self, other):
         if isinstance(other, self.__class__):
-            if self.base != other.base:
-                raise BaseDiceError("there is different dice base")
-            dice = Dice(count=self.count + other.count, base=self.base)
+            if self.face != other.face:
+                raise DiceFaceError("there is different dice face")
+            dice = Dice(count=self.count + other.count, face=self.face)
             return dice
         else:
             raise TypeError("unsupported operand type(s) for +: '{}' and '{}'".format(self.__class__, type(other)))
 
     def __sub__(self, other):
         if isinstance(other, self.__class__):
-            if self.base != other.base:
-                raise BaseDiceError("there is different dice base")
-            dice = Dice(count=self.count - other.count, base=self.base)
+            if self.face != other.face:
+                raise DiceFaceError("there is different dice face")
+            dice = Dice(count=self.count - other.count, face=self.face)
             return dice
         else:
             raise TypeError("unsupported operand type(s) for -: '{}' and '{}'".format(self.__class__, type(other)))
@@ -77,24 +77,24 @@ class Dice(object):
                 dice_str = str(dice_str)
             except TypeError:
                 raise TypeError("unsupported operand type for search_dice_in_str: '{}'".format(type(dice_str)))
-        dice_search = re.match(r"^(?P<count>\d+)d(?P<base>\d+)$", dice_str)
+        dice_search = re.match(r"^(?P<count>\d+)d(?P<face>\d+)$", dice_str)
         if dice_search:
             return {k: int(v) for k, v in dice_search.groupdict().items()}
         else:
             raise EmptyDiceError("there is no correct dice param in str")
 
-    def set_dice(self, count, base=0):
+    def set_dice(self, count, face=0):
         """
         Run init for set Dice
         """
-        self.__init__(count=count, base=base)
+        self.__init__(count=count, face=face)
 
-    def set_base(self, base=0):
+    def set_face(self, face=0):
         """
-        Set dice base for Dice
+        Set dice face for Dice
         """
-        if self._is_base_valid(base=base):
-            self.base = base
+        if self._is_face_valid(face=face):
+            self.face = face
 
     def set_count(self, count=0):
         """
@@ -112,29 +112,29 @@ class Dice(object):
         Rise error's if something not Ok
         """
         if not isinstance(count, int):
-            raise CountDiceError("unsupported type for dice count: '%s'" % type(count))
+            raise DiceCountError("unsupported type for dice count: '%s'" % type(count))
         elif count < 0:
-            raise CountDiceError("dice count can not be less than zero")
+            raise DiceCountError("dice count can not be less than zero")
         return True
 
     def _is_self_count_valid(self):
         return self._is_count_valid(count=self.count)
 
     @staticmethod
-    def _is_base_valid(base):
+    def _is_face_valid(face):
         """
-        Check Dice for validity by dice base.
+        Check Dice for validity by dice face.
         Return True if it's Ok
         Rise error's if something not Ok
         """
-        if not isinstance(base, int):
-            raise BaseDiceError("unsupported type for dice base: '%s'" % type(base))
-        elif base < 0:
-            raise BaseDiceError("dice base can not be less than zero")
+        if not isinstance(face, int):
+            raise DiceFaceError("unsupported type for dice face: '%s'" % type(face))
+        elif face < 0:
+            raise DiceFaceError("dice face can not be less than zero")
         return True
 
-    def _is_self_base_valid(self):
-        return self._is_base_valid(base=self.base)
+    def _is_self_face_valid(self):
+        return self._is_face_valid(face=self.face)
 
     def _is_dice_valid(self):
         """
@@ -142,7 +142,7 @@ class Dice(object):
         Return True if it's Ok
         Rise error's if something not Ok
         """
-        if self._is_self_count_valid() and self._is_self_base_valid():
+        if self._is_self_count_valid() and self._is_self_face_valid():
             return True
 
     # Dice roll functionality
@@ -152,9 +152,9 @@ class Dice(object):
         """
         if self._is_dice_valid():
             roll_result = 0
-            if self.base:
+            if self.face:
                 for i in range(self.count):
-                    roll_result += random.randint(1, self.base)
+                    roll_result += random.randint(1, self.face)
             return roll_result
 
     def max(self):
@@ -162,19 +162,19 @@ class Dice(object):
         Return the maximum value which can be
         """
         if self._is_dice_valid():
-            return self.base * self.count
+            return self.face * self.count
 
     def min(self):
         """
         Return the minimum value which can be
         """
         if self._is_dice_valid():
-            return self.count if self.base else 0
+            return self.count if self.face else 0
 
 
 class GurpsDice(Dice):
     """
-    It makes it possible to operate with dices with base equal 6.
+    It makes it possible to operate with dices with face equal 6.
     <count>d6±<bonus>
     or
     <count>d6
@@ -186,8 +186,8 @@ class GurpsDice(Dice):
     GurpsDice("3d6+3") - GurpsDice("1d6-1") -> GurpsDice("2d6+4")
     """
 
-    def __init__(self, count=1, base=6, bonus=0):
-        super(GurpsDice, self).__init__(count=count, base=base)
+    def __init__(self, count=1, bonus=0):
+        super(GurpsDice, self).__init__(count=count, face=6)
         bonus = bonus if isinstance(count, int) else self.search_dice_in_str(count)['bonus']
         if self._is_bonus_valid(bonus=bonus):
             self.bonus = bonus
@@ -228,7 +228,7 @@ class GurpsDice(Dice):
             except TypeError:
                 raise TypeError("unsupported operand type for search_dice_in_str: '{}'".format(type(dice_str)))
         dice_search = re.match(
-            r"^(?P<count>\d+)d(?P<base>[6])(?P<bonus>[-,+]\d+)?$",
+            r"^(?P<count>\d+)d(?P<face>[6])(?P<bonus>[-,+]\d+)?$",
             dice_str
         )
         if dice_search:
@@ -236,22 +236,21 @@ class GurpsDice(Dice):
         else:
             raise EmptyDiceError("there is no correct dice param in str")
 
-    def set_dice(self, count, base=6, bonus=0):
+    def set_dice(self, count, bonus=0):
         """
         Run init for set Dice
         """
-        self.__init__(count=count, base=base, bonus=bonus)
+        self.__init__(count=count, bonus=bonus)
 
-    def set_base(self, base=6):
+    def set_face(self, *args, **kwargs):
         """
-        Set dice base for Dice
+        Removed method for GurpsDice
         """
-        if self._is_base_valid(base=base):
-            self.base = base
+        raise DiceFaceError("dice face can not be changed")
 
     def set_count(self, count=1):
         """
-        Set count of dice for Dice
+        Set count of dice for GurpsDice
         """
         super(GurpsDice, self).set_count(count=count)
 
@@ -264,18 +263,18 @@ class GurpsDice(Dice):
 
     # Validating
     @staticmethod
-    def _is_base_valid(base):
+    def _is_face_valid(face):
         """
-        Check Dice for validity by dice base.
+        Check Dice for validity by dice face.
         Return True if it's Ok
         Rise error's if something not Ok
         """
-        if base != 6:
-            raise BaseDiceError("dice base should be equal to 6")
+        if face != 6:
+            raise DiceFaceError("dice face should be equal to 6")
         return True
 
-    def _is_self_base_valid(self):
-        return self._is_base_valid(base=self.base)
+    def _is_self_face_valid(self):
+        return self._is_face_valid(face=self.face)
 
     @staticmethod
     def _is_bonus_valid(bonus):
@@ -285,7 +284,7 @@ class GurpsDice(Dice):
         Rise error's if something not Ok
         """
         if not isinstance(bonus, int):
-            raise BonusDiceError("unsupported type for dice base: '%s'" % type(bonus))
+            raise DiceBonusError("unsupported type for dice face: '%s'" % type(bonus))
         return True
 
     def _is_self_bonus_valid(self):
@@ -297,8 +296,8 @@ class GurpsDice(Dice):
         Return True if it's Ok
         Rise error's if something not Ok
         """
-        base_and_count_valid = super(GurpsDice, self)._is_dice_valid()
-        if base_and_count_valid and self._is_self_bonus_valid():
+        face_and_count_valid = super(GurpsDice, self)._is_dice_valid()
+        if face_and_count_valid and self._is_self_bonus_valid():
             return True
 
     # GurpsDise rounding
