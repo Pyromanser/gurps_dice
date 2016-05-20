@@ -1,7 +1,9 @@
 import random
-from gurps_dice import Dice, GurpsDice, EmptyDiceError, BaseDiceError, CountDiceError
+from gurps_dice import Dice, GurpsDice, EmptyDiceError, BaseDiceError, CountDiceError, BonusDiceError
 from gurps_dice_handful import HandfulDice
 
+run_test_dice = False
+run_test_gurps_dice = True
 
 def random_int(start, end, excluding=()):
     r_int = random.randint(start, end)
@@ -16,10 +18,8 @@ def get_dice_str(count, base, bonus=0):
         dice_str += "{:+d}".format(bonus)
     return dice_str
 
-if __name__ == "__main__":
 
-    # test Dice
-
+def test_dice():
     print("---"*20)
     print("Dice test start")
     print("---"*20)
@@ -79,8 +79,6 @@ if __name__ == "__main__":
     for base in range(101):
         for count1 in range(101):
             for count2 in range(101):
-                dice1_str = get_dice_str(count1, base)
-                dice2_str = get_dice_str(count2, base)
                 dice_str = get_dice_str(count1 + count2, base)
                 dice1 = Dice(count1, base)
                 dice2 = Dice(count2, base)
@@ -299,24 +297,42 @@ if __name__ == "__main__":
     print("Dice test finished")
     print("---"*20)
 
-    # GurpsDice test
 
+def test_gurps_dice():
     print("---"*20)
     print("GurpsDice test start")
     print("---"*20)
 
-    g_dice = GurpsDice()
-    assert g_dice.__str__() == '1d6', 'GurpsDice() != "1d6", GurpsDice() == %s' % g_dice
+    dice = GurpsDice()
+    assert dice.__str__() == '1d6', 'GurpsDice() != "1d6", GurpsDice() == %s' % dice
     print('GurpsDice() == "1d6", OK')
 
-    g_dice = GurpsDice('1d6')
-    assert g_dice.__str__() == '1d6', 'GurpsDice("1d6") != "1d6", GurpsDice("1d6") == %s' % g_dice
-    print('GurpsDice("1d6") == "1d6", OK')
+    for count in range(101):
+        dice_str = get_dice_str(count, 6)
+        dice = GurpsDice(dice_str)
+        assert dice.__str__() == dice_str, 'GurpsDice("{dice_str}") != "{dice_str}", GurpsDice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
+    print('GurpsDice("<count>d6") with count parameter in range 0-100 is valid, OK')
 
-    g_dice = GurpsDice('159d6')
-    assert g_dice.__str__() == '159d6', 'GurpsDice("159d6") != "1d6", GurpsDice("159d6") == %s' % g_dice
-    print('GurpsDice("159d6") == "159d6", OK')
+    for count in range(101):
+        for bonus_str in ('+0', '-0'):
+            dice_str = get_dice_str(count, 6)
+            dice_input_str = dice_str + bonus_str
+            dice = GurpsDice(dice_input_str)
+            assert dice.__str__() == dice_str, 'GurpsDice("{dice_input_str}") != "{dice_str}", GurpsDice("{dice_input_str}") == {dice}'.format(dice_str=dice_str, dice_input_str=dice_input_str, dice=dice)
+    print('GurpsDice("<count>d6±0") with count parameter in range 0-100 is valid, OK')
+
+    for count in range(101):
+        for bonus in range(-101, 101):
+            dice_str = get_dice_str(count, 6, bonus)
+            dice = GurpsDice(dice_str)
+            assert dice.__str__() == dice_str, 'GurpsDice("{dice_str}") != "{dice_str}", GurpsDice("{dice_str}") == {dice}'.format(dice_str=dice_str, dice=dice)
+    print('GurpsDice("<count>d6±<bonus>") with count in range 0-100 and bonus in range -100-100 parameters is valid, OK')
 
     print("---"*20)
     print("GurpsDice test finished")
     print("---"*20)
+
+if run_test_dice:
+    test_dice()
+if run_test_gurps_dice:
+    test_gurps_dice()
