@@ -152,8 +152,9 @@ class Dice(object):
         """
         if self._is_dice_valid():
             roll_result = 0
-            for i in range(self.count):
-                roll_result += random.randint(1, self.base)
+            if self.base:
+                for i in range(self.count):
+                    roll_result += random.randint(1, self.base)
             return roll_result
 
     def max(self):
