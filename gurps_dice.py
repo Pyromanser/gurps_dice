@@ -327,7 +327,7 @@ class GurpsDice(Dice):
         It's round up GurpsDice
         """
         if self._is_dice_valid():
-            if self.bonus >= self.bonus >= 3 if round_seven else 4:
+            if self.bonus >= 3 if round_seven else 4:
                 self._add_gurps_dice(round_seven)
 
     def round_up_max(self, round_seven=True):
